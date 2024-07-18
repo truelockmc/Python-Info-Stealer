@@ -13,7 +13,7 @@ This Tool can grab:
 
 What you need to use it:
 -Python installed on your PC
--A discord Server and Webhook fpr the webhook version
+-A discord Server and Webhook for the webhook version
 -The libraries listed in requirements.txt
 -A tool like auto_py_to_exe to convert it into an .exe if you want to send the Programm to other People (Thats not legal btw)
 -
