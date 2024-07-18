@@ -9,6 +9,7 @@ This Tool can grab:
 -OS
 -Generic System and Processor Info
 -Location
+-Name of the current User
 
 
 What you need to use it:
